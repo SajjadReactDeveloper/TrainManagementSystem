@@ -148,7 +148,7 @@ export default ({navigation}) => {
                date: date,
                name: name,
                cnic: cnic,
-              }).then(result => navigation.navigate('View Ticket'))
+              }).then(result => navigation.navigate('Checkout', {fare: 2000}))
               .catch(err => console.log(err))
             }} style={{
                   backgroundColor: 'green',
