@@ -8,57 +8,35 @@ import {
   } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Input, Icon } from 'react-native-elements';
-
-const FIREBASE_API_ENDPOINT =
-  'https://covid-19-app-fe660-default-rtdb.firebaseio.com/';
-
-const postData = (country) => {
-  var requestOptions = {
-    method: 'POST',
-    body: JSON.stringify({
-      name: country,
-    }),
-  };
-
-  fetch(`${FIREBASE_API_ENDPOINT}/country.json`, requestOptions)
-    .then((response) => response.json())
-    .then((result) => console.log(result))
-    .catch((error) => console.log('error', error));
-};
-
-const deleteData = () => {
-  const id = '-MrWvChDCFKoDz4hiiVp';
-  var requestOptions = {
-    method: 'DELETE',
-  };
-
-  fetch(`${FIREBASE_API_ENDPOINT}/country/${id}.json`, requestOptions)
-    .then((response) => response.json())
-    .then((result) => console.log('Delete Response:', result))
-    .catch((error) => console.log('error', error));
-};
-
-const updateData = () => {
-  const id = '-Mra4c0ncxW5hz5GkRNJ';
-  var requestOptions = {
-    method: 'PATCH',
-    body: JSON.stringify({
-      username: 'UserName',
-      password: 'Password',
-      employeename: 'Update New Employee',
-    }),
-  };
-
-  fetch(`${FIREBASE_API_ENDPOINT}/country/${id}.json`, requestOptions)
-    .then((response) => response.json())
-    .then((result) => console.log(result))
-    .catch((error) => console.log('error', error));
-};
+import React from 'react';
+import db from '../db/firestore'
+import DatePicker from 'react-native-neat-date-picker'
 
 export default ({navigation}) => {
     const image = {
         uri: 'https://images.unsplash.com/photo-1530625625693-b38b404cb1be?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=387&q=80',
       };
+      const [showDatePicker, setShowDatePicker] = React.useState(false)
+      const [source, setSource] = React.useState();
+      const [destination, setDestination] = React.useState();
+      const [date, setDate] = React.useState();
+      const [name, setName] = React.useState();
+      const [cnic, setCnic] = React.useState();
+      const [selectedCity, setSelectedCity] = React.useState();
+
+      const openDatePicker = () => {
+        setShowDatePicker(true)
+      }
+    
+      const onCancel = () => {
+        setShowDatePicker(false)
+      }
+    
+      const onConfirm = ( date ) => {
+        setShowDatePicker(false)
+        setDate((date.getUTCDate()+1) + '-' + (date.toLocaleString('en-us', { month: 'long' })) + '-' + date.getUTCFullYear())
+      }
+
       return (
         <View style={styles.container}>
           <ImageBackground source={image} resizeMode="cover" style={styles.image}>
@@ -68,6 +46,7 @@ export default ({navigation}) => {
             placeholder="Source"
             placeholderTextColor = "#fff"
             inputStyle = {{color: '#fff'}}
+            onChangeText = {setSource}
             leftIcon={
               <Icon
                 name="plane"
@@ -83,6 +62,7 @@ export default ({navigation}) => {
             placeholder="Destination"
             placeholderTextColor = "#fff"
             inputStyle = {{color: '#fff'}}
+            onChangeText = {setDestination}
             leftIcon={
               <Icon
                 name="plane"
@@ -94,25 +74,45 @@ export default ({navigation}) => {
           />
     
           <Text style = {{marginLeft: 10, color: '#fff', fontSize: 18}}>Travel Date</Text>
+          <TouchableOpacity onPress = {() => {setShowDatePicker(true)}}>
           <Input
-            placeholder="Date"
-            placeholderTextColor = "#fff"
-            inputStyle = {{color: '#fff'}}
-            leftIcon={
-              <Icon
-                name="calendar"
-                type="font-awesome"
-                color="#fff"
-                iconStyle = {{marginRight: 10}}
-              />
-            }
-          />
+          placeholder="Enter Date"
+          placeholderTextColor = "#fff"
+          inputStyle = {{color: '#fff'}}
+          onChangeText = {setDate}
+          value ={date}
+          leftIcon={
+            <Icon
+              name="calendar"
+              type="font-awesome"
+              color="#fff"
+              iconStyle = {{marginRight: 10}}
+            />
+          }
+          rightIcon={
+            <Icon
+              name="calendar"
+              type="font-awesome"
+              color="#fff"
+              iconStyle = {{marginRight: 10}}
+              onPress = {() => {setShowDatePicker(true)}}
+            />
+          }
+        />
+          </TouchableOpacity>
+          <DatePicker
+        isVisible={showDatePicker}
+        mode={'single'}
+        onCancel={onCancel}
+        onConfirm={onConfirm}
+      />
     
           <Text style = {{marginLeft: 10, color: '#fff', fontSize: 18}}>Passenger Name</Text>
           <Input
             placeholder="Enter Passenger Name"
             placeholderTextColor = "#fff"
             inputStyle = {{color: '#fff'}}
+            onChangeText = {setName}
             leftIcon={
               <Icon
                 name="user"
@@ -129,6 +129,7 @@ export default ({navigation}) => {
             placeholder="Passenger CNIC"
             placeholderTextColor = "#fff"
             inputStyle = {{color: '#fff'}}
+            onChangeText = {setCnic}
             leftIcon={
               <Icon
                 name="id-card"
@@ -141,14 +142,26 @@ export default ({navigation}) => {
     
           <View style = {{justifyContent: 'center', alignItems: 'center', margin: 10}}>
             <TouchableOpacity onPress = {() => {
-              navigation.navigate('Update Employee');
+              db.collection('Ticket').add({
+               source: source,
+               destination: destination,
+               date: date,
+               name: name,
+               cnic: cnic,
+              }).then(result => navigation.navigate('View Ticket'))
+              .catch(err => console.log(err))
             }} style={{
                   backgroundColor: 'green',
                   padding: 10,
                   borderRadius: 5,
-                  width: 150,
+                  width: 180,
                   flexDirection: 'row',
-                }}><Text style = {{fontSize: 20, color: '#fff'}}>Book Ticket</Text></TouchableOpacity>
+                }}><Text style = {{fontSize: 20, color: '#fff'}}><Icon
+                name="ticket"
+                type="font-awesome"
+                color="#fff"
+                iconStyle = {{marginRight: 10}}
+              />Book Ticket</Text></TouchableOpacity>
           </View>
           </ImageBackground>
         </View>

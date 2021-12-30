@@ -1,4 +1,4 @@
-import { Text, View, StyleSheet, TouchableOpacity } from "react-native";
+import { Text, View, StyleSheet, TouchableOpacity, Image } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { DataTable } from "react-native-paper";
 import db from "../db/firestore";
@@ -22,6 +22,7 @@ export default ({ navigation }) => {
           cnic: docSnapshot.data().cnic,
           contact: docSnapshot.data().contact,
           designation: docSnapshot.data().designation,
+          link: docSnapshot.data().link
         }));
         setTask(tasks);
       },
@@ -40,16 +41,21 @@ export default ({ navigation }) => {
     <View style={{ marginTop: 30 }}>
       <DataTable>
         <DataTable.Header>
-          <DataTable.Title>ID</DataTable.Title>
+          <DataTable.Title>Image</DataTable.Title>
           <DataTable.Title numeric>Name</DataTable.Title>
           <DataTable.Title numeric>Update</DataTable.Title>
           <DataTable.Title numeric>Delete</DataTable.Title>
         </DataTable.Header>
 
         {task1.map((task) => (
-          <TouchableOpacity onPress={() => {navigation.navigate('Employee Detail', {item: {id: task.ID, name: task.name, age: task.age, cnic: task.cnic, contact: task.contact, designation: task.designation}})}}>
+          <TouchableOpacity onPress={() => {navigation.navigate('Employee Detail', {item: {id: task.ID, name: task.name, age: task.age, cnic: task.cnic, contact: task.contact, designation: task.designation, link: task.link}})}}>
             <DataTable.Row>
-              <DataTable.Cell>{task.ID}</DataTable.Cell>
+              <DataTable.Cell><Image
+              source={{
+                uri: task.link,
+              }}
+              style={{ width: 40, height: 40, borderRadius: 100, justifyContent: 'center', alignItems: 'center' }}
+            /></DataTable.Cell>
               <DataTable.Cell numeric>{task.name}</DataTable.Cell>
               <DataTable.Cell numeric>
                 <TouchableOpacity
@@ -57,7 +63,7 @@ export default ({ navigation }) => {
                     navigation.navigate("Update Employee", { item: task.id });
                   }}
                 >
-                  <Ionicons name="create-outline" size={24} color="red" />
+                  <Ionicons name="create-outline" size={24} color="black" />
                 </TouchableOpacity>
               </DataTable.Cell>
               <DataTable.Cell numeric>

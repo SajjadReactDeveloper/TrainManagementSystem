@@ -22,6 +22,9 @@ export default ({ navigation, route }) => {
   const [cnic, setCnic] = React.useState();
   const [contact, setContact] = React.useState();
   const [designation, setDesignation] = React.useState();
+  const [link, setLink] = React.useState();
+  const [task, setTask] = React.useState([]);
+
 
   const updateData = () => {
     return db.collection("Employee").doc(dataId).update({
@@ -29,16 +32,44 @@ export default ({ navigation, route }) => {
       age: age,
       cnic: cnic,
       contact: contact,
-      designation: designation
+      designation: designation,
+      link: link
     }).then((result) => navigation.navigate('View Employee'));
   };
+
+  React.useEffect(() => {
+    db.collection("Employee").onSnapshot({
+      next: (querySnapshot) => {
+        const tasks = querySnapshot.docs.map((docSnapshot) => ({
+          id: docSnapshot.id,
+          ID: docSnapshot.data().id,
+          name: docSnapshot.data().name,
+          age: docSnapshot.data().age,
+          cnic: docSnapshot.data().cnic,
+          contact: docSnapshot.data().contact,
+          designation: docSnapshot.data().designation,
+          link: docSnapshot.data().link
+        }));
+        var task = tasks.filter(e => e.id == dataId)
+        setTask(task[0]);
+        setID(task[0].ID)
+        setName(task[0].name)
+        setAge(task[0].age)
+        setCnic(task[0].cnic)
+        setContact(task[0].contact)
+        setDesignation(task[0].designation)
+      },
+      error: (err) => console.log(err),
+    });
+
+  }, []);
 
   return (
     <View style={styles.container}>
       <ImageBackground source={image} resizeMode="cover" style={styles.image}>
         <Text
           style={{
-            textAlign: "center",
+         textAlign: "center",
             color: "#fff",
             marginBottom: 10,
             fontSize: 24,
@@ -53,6 +84,7 @@ export default ({ navigation, route }) => {
           placeholder="Enter Employee ID"
           placeholderTextColor="#fff"
           inputStyle={{ color: "#fff" }}
+          value = {id}
           onChangeText={setID}
           leftIcon={
             <Icon
@@ -71,7 +103,10 @@ export default ({ navigation, route }) => {
           placeholder="Enter Employee Name"
           placeholderTextColor="#fff"
           inputStyle={{ color: "#fff" }}
-          onChangeText={setName}
+          onChangeText={(text)=>{
+            setName(text)
+          }}
+          value= {name}
           leftIcon={
             <Icon
               name="user"
@@ -88,6 +123,7 @@ export default ({ navigation, route }) => {
           placeholderTextColor="#fff"
           inputStyle={{ color: "#fff" }}
           onChangeText={setAge}
+          value = {age}
           leftIcon={
             <Icon
               name="male"
@@ -106,6 +142,7 @@ export default ({ navigation, route }) => {
           placeholderTextColor="#fff"
           inputStyle={{ color: "#fff" }}
           onChangeText={setCnic}
+          value = {cnic}
           leftIcon={
             <Icon
               name="id-card"
@@ -124,6 +161,7 @@ export default ({ navigation, route }) => {
           placeholderTextColor="#fff"
           inputStyle={{ color: "#fff" }}
           onChangeText={setContact}
+          value = {contact}
           leftIcon={
             <Icon
               name="mobile"
@@ -142,9 +180,28 @@ export default ({ navigation, route }) => {
           placeholderTextColor="#fff"
           inputStyle={{ color: "#fff" }}
           onChangeText={setDesignation}
+          value = {designation}
           leftIcon={
             <Icon
               name="id-badge"
+              type="font-awesome"
+              color="#fff"
+              iconStyle={{ marginRight: 10 }}
+            />
+          }
+        />
+
+        <Text style={{ marginLeft: 10, color: "#fff", fontSize: 18 }}>
+          Image Link
+        </Text>
+        <Input
+          placeholder="Enter Image Link"
+          placeholderTextColor="#fff"
+          inputStyle={{ color: "#fff" }}
+          onChangeText={setLink}
+          leftIcon={
+            <Icon
+              name="link"
               type="font-awesome"
               color="#fff"
               iconStyle={{ marginRight: 10 }}

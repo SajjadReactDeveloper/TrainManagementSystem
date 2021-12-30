@@ -17,6 +17,8 @@ import CancelTicket from './components/CancelTicket'
 import UpdateTicket from './components/UpdateTicket';
 import ViewTicket from './components/ViewTicket'
 import EmployeeDetail from './components/EmployeeDetail'
+import TicketDetail from './components/TicektDetails'
+import Checkout from './components/Checkout'
 import firestore from '@react-native-firebase/firestore'
 
 const Stack = createNativeStackNavigator();
@@ -27,7 +29,7 @@ export default function App() {
       <Stack.Navigator>
         <Stack.Screen
           name="Home"
-          component={ViewEmployee}
+          component={Checkout}
           options={{ headerShown: false }}
         />
         <Stack.Screen
@@ -83,6 +85,16 @@ export default function App() {
         <Stack.Screen
           name="Employee Detail"
           component={EmployeeDetail}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Ticket Detail"
+          component={TicketDetail}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Checkout"
+          component={Checkout}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>

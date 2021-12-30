@@ -22,6 +22,7 @@ export default ({navigation}) => {
       const [cnic, setCnic] = React.useState();
       const [contact, setContact] = React.useState();
       const [designation, setDesignation] = React.useState();
+      const [link, setLink] = React.useState();
       return (
         <View style={styles.container}>
           <ImageBackground source={image} resizeMode="cover" style={styles.image}>
@@ -122,6 +123,22 @@ export default ({navigation}) => {
               />
             }
           />
+
+          <Text style = {{marginLeft: 10, color: '#fff', fontSize: 18}}>Image Link</Text>
+          <Input
+            placeholder="Enter Link"
+            placeholderTextColor = "#fff"
+            inputStyle = {{color: '#fff'}}
+            onChangeText = {setLink}
+            leftIcon={
+              <Icon
+                name="link"
+                type="font-awesome"
+                color="#fff"
+                iconStyle = {{marginRight: 10}}
+              />
+            }
+          />
     
           <View style = {{justifyContent: 'center', alignItems: 'center', margin: 10}}>
             <TouchableOpacity onPress = {() => {
@@ -131,7 +148,8 @@ export default ({navigation}) => {
               age: age,
               cnic: cnic,
               contact: contact,
-              designation: designation
+              designation: designation,
+              link: link
              }).then(result => navigation.navigate('View Employee'))
              .catch(err => console.log(err))
             }} style={{
